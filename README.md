@@ -35,7 +35,7 @@ Contents include:
 
 ---
 
-## 🛠️ Prerequisites & Setup
+## Prerequisites & Setup
 
 - **Python**: 3.9+ recommended
 - **Jupyter Notebook / JupyterLab / VS Code / Google Colab**
