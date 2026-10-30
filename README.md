@@ -21,6 +21,15 @@ Contents include:
 
 ---
 
+## Lab & Assignment Directory
+
+| Lab / Assignment | Topic | Key Techniques & Concepts | Status | Link |
+| :--- | :--- | :--- | :---: | :---: |
+| **TP 01** | Introduction to PyTorch | Tensors, Gradients, Broadcasting, Autograd | Completed | [View Notebook](tpw1/TP_Introduction_to_PyTorch.ipynb) |
+| **Notebook 01** | PyTorch Tutorial & Fundamentals | Tensor operations, GPU acceleration, Random seeds, Vectorization | Completed | [View Notebook](tpw1/Notebook1_Introduction_to_PyTorch.ipynb) |
+
+---
+
 ## Repository Structure & Solutions
 
 ```text
