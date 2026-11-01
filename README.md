@@ -27,7 +27,8 @@ Contents include:
 | :--- | :--- | :--- | :---: | :---: |
 | **TP 01** | Introduction to PyTorch | Tensors, Gradients, Broadcasting, Autograd | Completed | [View Notebook](tpw1/TP_Introduction_to_PyTorch.ipynb) |
 | **Notebook 01** | PyTorch Tutorial & Fundamentals | Tensor operations, GPU acceleration, Random seeds, Vectorization | Completed | [View Notebook](tpw1/Notebook1_Introduction_to_PyTorch.ipynb) |
-| **TP 02** | Deep Neural Network Step by Step | Deep L-layer NN, Forward/Backward propagation, Leaky ReLU, Autograd verification, Gradient descent | Completed | [View Notebook](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb) |
+| **TP 02 Class Activity** | Deep Neural Network Step by Step | Deep L-layer NN, Forward/Backward propagation, Leaky ReLU, Autograd verification, Gradient descent | Completed | [View Notebook](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb) |
+| **TP 02 Assignment** | Odd or Even Classification with Deep NN | Binary classification on MNIST, Deep architecture tuning, Initialization analysis, Error analysis | Completed | [View Notebook](tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb) |
 
 ---
 
@@ -42,7 +43,8 @@ Contents include:
 │   ├── TP_Introduction_to_PyTorch.ipynb          # ★ Week 1 Primary Solution Notebook (Exercises 1–12 Completed)
 │   └── Notebook1_Introduction_to_PyTorch.ipynb   # Guided tutorial / lecture notebook (with completed exercises)
 └── tpw2/
-    └── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # ★ Week 2 Solution Notebook (Exercises 1–3 Completed)
+    ├── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # ★ Week 2 Class Activity (Exercises 1–3 Completed)
+    └── TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb  # ★ Week 2 Assignment (Tasks 1–6 Completed)
 ```
 
 ---
@@ -70,8 +72,10 @@ The complete solutions for Week 1 exercises are located in [**`tpw1/TP_Introduct
 
 ---
 
-### Week 2 (`tpw2/`) — Building a Deep Neural Network, Step by Step
-The complete solutions for Week 2 exercises are located in [**`tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb`**](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb):
+### Week 2 (`tpw2/`) — Deep Neural Networks
+
+#### 1. Class Activity: Building a Deep Neural Network, Step by Step
+Located in [**`tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb`**](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb):
 
 - **Exercise 1 · Shapes & Number of Parameters**:
   - Computed layer-by-layer shapes for $\mathbf{W}^{[l]}$, $\mathbf{b}^{[l]}$, and $\mathbf{Z}^{[l]}$ analytically for $[784, 64, 32, 1]$ with batch size $m = 10000$.
@@ -87,5 +91,25 @@ The complete solutions for Week 2 exercises are located in [**`tpw2/TP2_DeepNN_S
   - Implemented `L_model_backward_fixed` and validated gradient equality against autograd ($\Delta \approx 10^{-8}$).
   - Documented concise single-sentence explanations for each bug.
 
----
+#### 2. Assignment: Odd or Even Classification with Deep Networks
+Located in [**`tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb`**](tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb):
 
+- **Task 1 · `predict` and `accuracy`**:
+  - Implemented probability thresholding ($a^{[L]} > 0.5 \to 1.0$) and accuracy calculation returning Python floats.
+  - Verified baseline random guessing on untrained network ($57.6\%$ dev accuracy, $44.9\%$ predicted odd).
+- **Task 2 · The Training Loop**:
+  - Implemented generalized `L_layer_model` handling forward pass, cross-entropy cost tracking, backpropagation, and parameter updates.
+- **Task 3 · Architectural Depth Comparison**:
+  - Trained and evaluated Logistic Regression (`[784, 1]`: $89.3\%$ dev), 2-layer (`[784, 7, 1]`: $95.5\%$ dev), and 4-layer (`[784, 20, 7, 5, 1]`: $96.9\%$ dev).
+  - Plotted cost curves and documented bias vs. variance analysis and gradient spike dynamics.
+- **Task 4 · Weight Initialization Analysis**:
+  - Evaluated small initialization (`scale=0.01`) on a 4-layer network, analyzing signal decay and gradient vanishing ($51.2\%$ accuracy) vs. variance-preserving Xavier/He initialization.
+- **Task 5 · Best Model Selection**:
+  - Tested 4 distinct configurations across width, depth, and learning rates.
+  - Selected `[784, 128, 32, 1]` ($\text{lr}=0.25$, $2500$ iterations) based on dev set performance (**$97.85\%$ dev accuracy**), achieving **$97.58\%$ on the test set**.
+- **Task 6 · Error Analysis**:
+  - Evaluated per-digit test error rates (highest: 5, 8, 9; lowest: 0, 6).
+  - Visualized misclassified samples with predicted probabilities.
+  - Analyzed perceptual confusion mechanisms across digit pairs (4 vs. 9, 3 vs. 8).
+
+---
