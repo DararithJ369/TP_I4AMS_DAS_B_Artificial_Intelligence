@@ -29,6 +29,7 @@ Contents include:
 | **Notebook 01** | PyTorch Tutorial & Fundamentals | Tensor operations, GPU acceleration, Random seeds, Vectorization | Completed | [View Notebook](tpw1/Notebook1_Introduction_to_PyTorch.ipynb) |
 | **TP 02 Class Activity** | Deep Neural Network Step by Step | Deep L-layer NN, Forward/Backward propagation, Leaky ReLU, Autograd verification, Gradient descent | Completed | [View Notebook](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb) |
 | **TP 02 Assignment** | Odd or Even Classification with Deep NN | Binary classification on MNIST, Deep architecture tuning, Initialization analysis, Error analysis | Completed | [View Notebook](tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb) |
+| **TP 03** | Initialization and Regularization | Weight initialization (zeros, random, He), L2 regularization, Dropout, Moons & Spirals classification, Custom Tanh | Completed | [View Notebook](tpw3/TP3_Initialization_Regularization.ipynb) |
 
 ---
 
@@ -42,9 +43,11 @@ Contents include:
 ├── tpw1/
 │   ├── TP_Introduction_to_PyTorch.ipynb          # ★ Week 1 Primary Solution Notebook (Exercises 1–12 Completed)
 │   └── Notebook1_Introduction_to_PyTorch.ipynb   # Guided tutorial / lecture notebook (with completed exercises)
-└── tpw2/
-    ├── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # ★ Week 2 Class Activity (Exercises 1–3 Completed)
-    └── TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb  # ★ Week 2 Assignment (Tasks 1–6 Completed)
+├── tpw2/
+│   ├── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # ★ Week 2 Class Activity (Exercises 1–3 Completed)
+│   └── TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb  # ★ Week 2 Assignment (Tasks 1–6 Completed)
+└── tpw3/
+    └── TP3_Initialization_Regularization.ipynb       # ★ Week 3 Assignment & Class Activity (Exercises 1–8 Completed)
 ```
 
 ---
@@ -111,5 +114,43 @@ Located in [**`tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb`**](tpw2/TP2_Od
   - Evaluated per-digit test error rates (highest: 5, 8, 9; lowest: 0, 6).
   - Visualized misclassified samples with predicted probabilities.
   - Analyzed perceptual confusion mechanisms across digit pairs (4 vs. 9, 3 vs. 8).
+
+---
+
+### Week 3 (`tpw3/`) — Initialization and Regularization
+Located in [**`tpw3/TP3_Initialization_Regularization.ipynb`**](tpw3/TP3_Initialization_Regularization.ipynb):
+
+- **Exercise 1 · The Moons Dataset**:
+  - Generated binary classification dataset using scikit-learn's `make_moons` ($1000$ samples, `noise=0.07`, `random_state=42`).
+  - Converted into PyTorch `float32` tensors with labels shaped $(m, 1)$.
+  - Split 80/20 into train ($800$ samples) and test ($200$ samples) sets and plotted the training distribution.
+- **Exercise 2 · MoonModel with He Initialization**:
+  - Implemented `MoonModel` subclassing `nn.Module` with non-linear activations (ReLU) outputting one logit.
+  - Initialized linear layers with He initialization (`kaiming_normal_` for weights, zeros for biases).
+  - Model architecture: `[2, 30, 30, 1]` ($1051$ trainable parameters).
+- **Exercise 3 · Loss and Optimizer**:
+  - Configured `nn.BCEWithLogitsLoss` and `torch.optim.SGD` optimizer ($\text{lr} = 0.3$).
+  - Documented numerical stability advantages of `nn.BCEWithLogitsLoss` (fused log-sum-exp stabilization preventing `NaN` from overflow/underflow) over `nn.Sigmoid()` + `nn.BCELoss()`.
+- **Exercise 4 · Training and Testing Loop**:
+  - Trained `MoonModel` for $1000$ epochs, tracking training/test loss and accuracy every $100$ epochs.
+  - Achieved **$100.0\%$ test accuracy** (exceeding the $96.0\%$ threshold).
+- **Exercise 5 · Decision Boundaries**:
+  - Visualized side-by-side decision boundaries for training ($100.0\%$) and test ($100.0\%$) sets using `plot_decision_boundary`.
+- **Exercise 6 · Pure PyTorch Tanh**:
+  - Implemented `my_tanh(z) = (exp(z) - exp(-z)) / (exp(z) + exp(-z))` using pure PyTorch exponentials and arithmetic.
+  - Verified numerical equivalence against `torch.tanh` on $[-5, 5]$ ($\Delta \le 1.2 \times 10^{-7}$) and plotted comparison.
+  - Analyzed overflow behavior at $z = 100$ ($e^{100} \to \text{inf} \implies \text{NaN}$) and implemented numerically stable reformulation $\tanh(z) = 2\sigma(2z) - 1$ ($= 1.0$).
+- **Exercise 7 · CS231n 3-Class Spiral Dataset**:
+  - Created 3-class spiral dataset ($300$ points) and converted to PyTorch tensors (`float32` features, `long` labels).
+  - Built `SpiralModel` multi-class network (`[2, 64, 64, 3]`), trained with `nn.CrossEntropyLoss` and `Adam` optimizer ($\text{lr} = 0.02$).
+  - Reached **$100.0\%$ test accuracy** (exceeding the $95.0\%$ target) and plotted train/test decision boundaries.
+- **Exercise 8 · Regularization on Large Spiral Model**:
+  - Built a large capacity model (`[2, 128, 128, 3]`) to study overfitting and regularization dynamics.
+  - Trained and compared three configurations:
+    1. **Baseline** (No regularization)
+    2. **L2 Regularization** (`weight_decay=1e-3` on weights only)
+    3. **Dropout** (`nn.Dropout(p=0.25)`)
+  - Plotted side-by-side decision boundaries illustrating overfitting contortions in the baseline vs. smooth, generalized decision boundaries under L2 and Dropout.
+  - Documented hyperparameter tuning protocol (using a validation/dev set, never the test set).
 
 ---
