@@ -120,38 +120,37 @@ Located in [**`tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb`**](tpw2/TP2_Od
 ### Week 3 (`tpw3/`) — Initialization and Regularization
 Located in [**`tpw3/TP3_Initialization_Regularization.ipynb`**](tpw3/TP3_Initialization_Regularization.ipynb):
 
+Every exercise in this notebook includes a comprehensive **Conceptual Guide & Rationale** addressing:
+1. **What**: The exact assignment requirements and mathematical targets.
+2. **Why**: The underlying theoretical motivation, gradient flow behavior, and numerical constraints.
+3. **How**: Step-by-step PyTorch implementations, tensor mechanics, and training cycles.
+4. **Visualization Rationale**: Justifications for chosen charts (scatter distributions, dual-function curve overlays, and multi-panel decision boundary contours).
+
 - **Exercise 1 · The Moons Dataset**:
-  - Generated binary classification dataset using scikit-learn's `make_moons` ($1000$ samples, `noise=0.07`, `random_state=42`).
-  - Converted into PyTorch `float32` tensors with labels shaped $(m, 1)$.
-  - Split 80/20 into train ($800$ samples) and test ($200$ samples) sets and plotted the training distribution.
+  - **What & Why:** Generated non-linearly separable benchmark data using scikit-learn's `make_moons` ($1000$ samples, `noise=0.07`, `random_state=42`) to demonstrate why linear models fail and justify deep architectures.
+  - **How:** Converted into PyTorch `float32` tensors with labels shaped $(m, 1)$ via `.unsqueeze(1)` to prevent silent $(m, m)$ broadcasting bugs in BCE loss; split 80/20 into train ($800$) and test ($200$) sets.
+  - **Chart Choice:** 2D scatter plot using `RdYlBu` colormap (Class 0 / Upper Moon = Red, Class 1 / Lower Moon = Blue) to visually display non-linear curvature.
 - **Exercise 2 · MoonModel with He Initialization**:
-  - Implemented `MoonModel` subclassing `nn.Module` with non-linear activations (ReLU) outputting one logit.
-  - Initialized linear layers with He initialization (`kaiming_normal_` for weights, zeros for biases).
-  - Model architecture: `[2, 30, 30, 1]` ($1051$ trainable parameters).
+  - **What & Why:** Built `MoonModel` subclassing `nn.Module` with non-linear activations (ReLU) outputting one logit. Symmetrical zero weights collapse hidden layers into a single neuron; He initialization ($\sigma = \sqrt{2/n_{in}}$) compensates for ReLU's half-zeroing effect, preserving variance.
+  - **How:** Architecture `[2, 30, 30, 1]` ($1051$ parameters). `init_he(model)` applies `kaiming_normal_` on weights and zeros on biases (safe since random weights break symmetry).
 - **Exercise 3 · Loss and Optimizer**:
-  - Configured `nn.BCEWithLogitsLoss` and `torch.optim.SGD` optimizer ($\text{lr} = 0.3$).
-  - Documented numerical stability advantages of `nn.BCEWithLogitsLoss` (fused log-sum-exp stabilization preventing `NaN` from overflow/underflow) over `nn.Sigmoid()` + `nn.BCELoss()`.
+  - **What & Why:** Configured `nn.BCEWithLogitsLoss` and `torch.optim.SGD` ($\text{lr} = 0.3$). Decoupling Sigmoid and BCELoss causes `log(0) = -inf`/`NaN` on extreme logits ($z=100$) and vanishing gradients.
+  - **How:** `nn.BCEWithLogitsLoss` fuses Sigmoid + BCE via the log-sum-exp trick ($\mathcal{L} = \max(z,0) - zy + \log(1+e^{-|z|})$), with gradient simplifying cleanly to $\sigma(z) - y$.
 - **Exercise 4 · Training and Testing Loop**:
-  - Trained `MoonModel` for $1000$ epochs, tracking training/test loss and accuracy every $100$ epochs.
-  - Achieved **$100.0\%$ test accuracy** (exceeding the $96.0\%$ threshold).
+  - **What & Why:** Built a 5-step PyTorch training cycle (`model.train()`, forward, loss, `zero_grad()`, `backward()`, `step()`) and an evaluation block (`model.eval()`, `torch.inference_mode()`) to assess generalization on unseen data.
+  - **How:** Trained for $1000$ epochs, tracking metrics every $100$ epochs. Reached **$100.0\%$ test accuracy by Epoch 200** (exceeding the $96.0\%$ benchmark).
 - **Exercise 5 · Decision Boundaries**:
-  - Visualized side-by-side decision boundaries for training ($100.0\%$) and test ($100.0\%$) sets using `plot_decision_boundary`.
+  - **What & Why:** Visualized spatial classification boundaries to confirm the network learned smooth continuous geometry rather than memorizing discrete points.
+  - **How & Chart Choice:** Side-by-side dense meshgrid contour plots ($300 \times 300 = 90,000$ points) evaluating train ($100.0\%$) and test ($100.0\%$) distributions, confirming identical boundary separation and strong generalization.
 - **Exercise 6 · Pure PyTorch Tanh**:
-  - Implemented `my_tanh(z) = (exp(z) - exp(-z)) / (exp(z) + exp(-z))` using pure PyTorch exponentials and arithmetic.
-  - Verified numerical equivalence against `torch.tanh` on $[-5, 5]$ ($\Delta \le 1.2 \times 10^{-7}$) and plotted comparison.
-  - Analyzed overflow behavior at $z = 100$ ($e^{100} \to \text{inf} \implies \text{NaN}$) and implemented numerically stable reformulation $\tanh(z) = 2\sigma(2z) - 1$ ($= 1.0$).
+  - **What & Why:** Implemented $\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$ from scratch to study zero-centered activations and floating-point overflow dynamics.
+  - **How & Chart Choice:** On $[-5, 5]$, custom Tanh matches `torch.tanh` with max diff $\le 1.2 \times 10^{-7}$. Overlaid dual-line plot displays steep gradient at $z=0$ and saturation at $|z| > 2$. For $z = 100$, $e^{100} \to \text{inf}$ yields `NaN`; the reformulation $\tanh(z) = 2\sigma(2z) - 1$ safely evaluates to $1.0$.
 - **Exercise 7 · CS231n 3-Class Spiral Dataset**:
-  - Created 3-class spiral dataset ($300$ points) and converted to PyTorch tensors (`float32` features, `long` labels).
-  - Built `SpiralModel` multi-class network (`[2, 64, 64, 3]`), trained with `nn.CrossEntropyLoss` and `Adam` optimizer ($\text{lr} = 0.02$).
-  - Reached **$100.0\%$ test accuracy** (exceeding the $95.0\%$ target) and plotted train/test decision boundaries.
+  - **What & Why:** Multi-class classification ($K=3$, $300$ points) with Softmax cross-entropy on intertwined concentric spiral arms.
+  - **How & Chart Choice:** Architecture `[2, 64, 64, 3]` trained with `nn.CrossEntropyLoss` and `Adam` ($\text{lr} = 0.02$) to **$100.0\%$ test accuracy**. Multi-class contour plot confirms the network learned three rotating spiral decision boundaries.
 - **Exercise 8 · Regularization on Large Spiral Model**:
-  - Built a large capacity model (`[2, 128, 128, 3]`) to study overfitting and regularization dynamics.
-  - Trained and compared three configurations:
-    1. **Baseline** (No regularization)
-    2. **L2 Regularization** (`weight_decay=1e-3` on weights only)
-    3. **Dropout** (`nn.Dropout(p=0.25)`)
-  - Plotted side-by-side decision boundaries illustrating overfitting contortions in the baseline vs. smooth, generalized decision boundaries under L2 and Dropout.
-  - Documented hyperparameter tuning protocol (using a validation/dev set, never the test set).
+  - **What & Why:** Compared high-capacity model (`[2, 128, 128, 3]`) across Baseline (overfitted), L2 Regularization (`weight_decay=1e-3` on weights only), and Dropout ($p=0.25$).
+  - **Chart Choice & Analysis:** 3-panel side-by-side decision boundary figure visually demonstrates that L2 regularization smooths out high-frequency boundary wrinkles into continuous spiral arms, while Dropout builds wide-margin decision boundaries. Confirmed hyperparameters must be tuned on a validation/dev set to prevent test data leakage.
 
 #### Experimental Benchmarks & Results (TP3)
 
