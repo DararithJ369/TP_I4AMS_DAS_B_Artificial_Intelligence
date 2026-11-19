@@ -30,6 +30,7 @@ Contents include:
 | **TP 02 Class Activity** | Deep Neural Network Step by Step | Deep L-layer NN, Forward/Backward propagation, Leaky ReLU, Autograd verification, Gradient descent | Completed | [View Notebook](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb) |
 | **TP 02 Assignment** | Odd or Even Classification with Deep NN | Binary classification on MNIST, Deep architecture tuning, Initialization analysis, Error analysis | Completed | [View Notebook](tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb) |
 | **TP 03** | Initialization and Regularization | Weight initialization (zeros, random, He), L2 regularization, Dropout, Moons & Spirals classification, Custom Tanh | Completed | [View Notebook](tpw3/TP3_Initialization_Regularization.ipynb) |
+| **TP 04** | Optimization Algorithms & Techniques | SGD, Mini-batches, Momentum, Nesterov, Adaptive Optimizers (Adagrad, RMSprop, Adam, AdamW), LR Schedules, Batch Normalization | Completed | [View Notebook](tpw4/TP4_Optimization.ipynb) |
 
 ---
 
@@ -46,8 +47,10 @@ Contents include:
 ├── tpw2/
 │   ├── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # ★ Week 2 Class Activity (Exercises 1–3 Completed)
 │   └── TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb  # ★ Week 2 Assignment (Tasks 1–6 Completed)
-└── tpw3/
-    └── TP3_Initialization_Regularization.ipynb       # ★ Week 3 Assignment & Class Activity (Exercises 1–8 Completed)
+├── tpw3/
+│   └── TP3_Initialization_Regularization.ipynb       # ★ Week 3 Assignment & Class Activity (Exercises 1–8 Completed)
+└── tpw4/
+    └── TP4_Optimization.ipynb                        # ★ Week 4 Primary Solution Notebook (Exercises 1–8 Completed)
 ```
 
 ---
@@ -168,5 +171,56 @@ Every exercise in this notebook includes a comprehensive **Conceptual Guide & Ra
 | **Baseline (Overfit)** | None (`drop_p = 0.0`, `wd = 0.0`) | $99.2\%$ | $100.0\%$ | Jagged, highly fragmented contours wrapping tightly around individual points |
 | **L2 Regularization** | `weight_decay = 1e-3` (weights only) | $99.2\%$ | $100.0\%$ | Constrained parameter norms produce smooth, rounded spiral separation |
 | **Dropout** | Inverted Dropout ($p = 0.25$) | $99.2\%$ | $100.0\%$ | Prevents co-adaptation; robust, wide-margin decision boundaries |
+
+---
+
+### Week 4 (`tpw4/`) — Optimization: SGD, Mini-batches, Momentum & Modern Techniques
+The complete solutions and experimental benchmarks for Week 4 are located in [**`tpw4/TP4_Optimization.ipynb`**](tpw4/TP4_Optimization.ipynb):
+
+#### Core Exercises & Theoretical Synthesis
+
+- **Exercise 1 · The Learning Rate of SGD**:
+  - **What & Why:** Evaluated plain `optim.SGD` across six learning rates $\alpha \in \{1.0, 0.3, 0.1, 0.03, 0.01, 0.001\}$ on 10,000 MNIST training samples for 5 epochs. Step size $\alpha$ governs convergence rate vs numerical stability in $\theta \leftarrow \theta - \alpha \nabla_\theta J$.
+  - **How & Chart Choice:** Plotted exponentially smoothed step loss ($\beta=0.98$) and validation accuracy per epoch. $\alpha = 0.3$ proved optimal ($95.05\%$ accuracy); $\alpha = 1.0$ caused severe oscillations ($33.57\%$), and $\alpha = 0.001$ stagnated prematurely ($53.40\%$).
+
+- **Exercise 2 · Batch Size: One Example, Mini-batches, and Full Set**:
+  - **What & Why:** Benchmarked batch sizes $B \in \{1, 32, 256, 10000\}$ under $\alpha=0.01$ and $\alpha=0.1$ to quantify the trade-off between gradient noise and hardware SIMD vectorization throughput.
+  - **How & Findings:** 
+    - At $\alpha=0.01$, stochastic GD ($B=1$, 10,000 updates/epoch) reached $93.57\%$ but took $2.59$ s/epoch due to Python loop overhead; mini-batch ($B=32$) completed in $0.16$ s/epoch ($16\times$ faster). Full-batch ($B=10000$) took only 1 update/epoch and failed to move ($9.80\%$).
+    - At $\alpha=0.1$, stochastic GD ($B=1$) suffered violent noise divergence ($11.30\%$), whereas mini-batch ($B=32$) achieved the sweet spot ($93.60\%$).
+
+- **Exercise 3 · Momentum & Nesterov Acceleration**:
+  - **What & Why:** Evaluated classical Polyak momentum ($\beta=0.9$), Nesterov accelerated gradient, small learning rate ($\alpha=0.001, \beta=0.9$), and excessive momentum ($\beta=0.99$) against plain SGD ($\alpha=0.01$).
+  - **How & Findings:** Momentum $\beta=0.9$ boosted validation accuracy from $88.40\%$ to $93.98\%$ by multiplying the effective step size by $\frac{1}{1-\beta} = 10\times$ along consistent gradients and canceling ravines. Nesterov momentum achieved $93.93\%$ with predictive look-ahead damping. $\beta=0.99$ created excessive inertia and overshooting ($92.03\%$).
+
+- **Exercise 4 · Optimizers and Their Learning Rates**:
+  - **What & Why:** Comprehensive matrix comparison of 6 optimizers (SGD, SGD+Mom, Adagrad, RMSprop, Adam, AdamW) across 4 decade learning rates $\alpha \in \{10^{-1}, 10^{-2}, 10^{-3}, 10^{-4}\}$.
+  - **Grid Benchmark:**
+    - SGD: Best at $10^{-1}$ ($93.62\%$).
+    - SGD + Momentum: Broad optimum at $10^{-2}$ ($94.00\%$) and $10^{-1}$ ($93.70\%$).
+    - Adagrad: Best at $10^{-2}$ ($93.98\%$); monotonic denominator accumulation stalls smaller LRs.
+    - RMSprop: Peak performance at $10^{-3}$ ($94.93\%$); diverged/collapsed at $10^{-1}$ ($21.25\%$).
+    - Adam & AdamW: Outstanding convergence and stability at $10^{-3}$ ($94.15\%$ and $94.02\%$).
+
+- **Exercise 5 · Learning Rate Schedules**:
+  - **What & Why:** Trained for 10 epochs using `optim.SGD(lr=0.05, momentum=0.9)` comparing: Constant LR, StepLR (step=3, $\gamma=0.3$), ExponentialLR ($\gamma=0.7$), CosineAnnealingLR ($T_{\max}=10$), and Early StepLR (step=1, $\gamma=0.1$).
+  - **Chart Choice & Findings:** Log-scale learning rate profiles plotted alongside loss/accuracy curves. Cosine Annealing achieved the highest validation accuracy ($95.95\%$) by decaying smoothly into deep local valleys without discontinuous shocks. Decaying too early froze the model prematurely at $93.87\%$.
+
+- **Exercise 6 · Batch Normalization**:
+  - **What & Why:** Evaluated `MLP` with vs without `nn.BatchNorm1d` across $\alpha \in \{1.0, 0.1, 0.01, 0.001\}$, and analyzed `model.eval()` vs `model.train()` modes on mini-batches of 8 samples.
+  - **How & Findings:**
+    - Without BN, $\alpha = 1.0$ diverged completely (loss exploded to `inf`). With BN, the model stabilized and reached $90.40\%$.
+    - Across all learning rates, BN converged faster and reached higher validation accuracy ($95.43\%$ vs $93.82\%$).
+    - **Eval Mode vs Train Mode:** Evaluating the BN model in `model.eval()` mode (clean population statistics) yielded **$95.77\%$**, whereas evaluating in `model.train()` mode with small batches ($B=8$) dropped to **$85.85\%$** (a **$9.92$ percentage point collapse** due to high sample-variance distortion).
+
+- **Exercise 7 · Best Model on Full 54,000 Training Set**:
+  - **Configuration:** Architecture with Batch Normalization (`batch_norm=True`), `AdamW` optimizer ($\alpha = 10^{-3}$, `weight_decay = 1e-4`), batch size 64, and `CosineAnnealingLR` ($T_{\max}=10, \eta_{\min}=10^{-5}$) trained on all 54,000 images for 10 epochs.
+  - **Result:** Monotonic training loss drop to $0.0070$ and peak validation accuracy of **$98.25\%$**.
+
+- **Exercise 8 · Unbiased Test Set Generalization**:
+  - **What & Why:** Evaluated the best trained model strictly once on the 10,000 unseen MNIST test images.
+  - **Result:**
+    - **Final Test Accuracy:** **$98.33\%$** (Cross-Entropy Loss: $0.0572$).
+    - **Generalization Gap:** $|98.25\% - 98.33\%| = 0.08\%$, demonstrating optimal generalization without overfitting.
 
 ---
