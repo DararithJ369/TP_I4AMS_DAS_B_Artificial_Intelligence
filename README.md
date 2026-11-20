@@ -223,4 +223,11 @@ The complete solutions and experimental benchmarks for Week 4 are located in [**
     - **Final Test Accuracy:** **$98.33\%$** (Cross-Entropy Loss: $0.0572$).
     - **Generalization Gap:** $|98.25\% - 98.33\%| = 0.08\%$, demonstrating optimal generalization without overfitting.
 
+- **Exercise 9 · CIFAR-10 Optimization Benchmark**:
+  - **What & Why:** Extended evaluation from MNIST to CIFAR-10 (50,000 $32 \times 32 \times 3$ natural color images, 10 classes) by partitioning into 45,000 train / 5,000 val sets, normalizing channel-wise with training statistics, flattening to 3072 features, and training an expanded MLP `[3072, 512, 256, 10]` (~1.7M parameters) for 10 epochs.
+  - **Configurations & Findings:**
+    - **Configuration (a) — AdamW + Batch Normalization + Cosine Annealing:** Reached peak validation accuracy of **$58.34\%$** and rapid loss reduction to $0.6672$.
+    - **Configuration (b) — AdamW without Batch Normalization:** Reached **$55.98\%$** validation accuracy ($2.36$ percentage points lower), showing that Batch Normalization stabilizes training across wider hidden layers.
+    - **Configuration (c) — Plain SGD ($\alpha=0.01$):** Stagnated at **$50.68\%$** peak validation accuracy with higher loss ($1.1398$), demonstrating that modern adaptive optimization and normalization become crucial on rugged, high-dimensional loss landscapes.
+
 ---
