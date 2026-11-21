@@ -230,4 +230,45 @@ The complete solutions and experimental benchmarks for Week 4 are located in [**
     - **Configuration (b) — AdamW without Batch Normalization:** Reached **$55.98\%$** validation accuracy ($2.36$ percentage points lower), showing that Batch Normalization stabilizes training across wider hidden layers.
     - **Configuration (c) — Plain SGD ($\alpha=0.01$):** Stagnated at **$50.68\%$** peak validation accuracy with higher loss ($1.1398$), demonstrating that modern adaptive optimization and normalization become crucial on rugged, high-dimensional loss landscapes.
 
+#### Experimental Benchmarks & Results (TP4)
+
+##### 1. Optimizer and Learning Rate Grid Benchmark (MNIST, 10,000 samples, 5 epochs)
+| Optimizer | lr = 1e-1 | lr = 1e-2 | lr = 1e-3 | lr = 1e-4 | Best Accuracy |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **SGD** | 93.62% | 88.23% | 52.92% | 9.88% | 93.62% |
+| **SGD + Momentum (0.9)** | 93.70% | 94.00% | 88.33% | 52.70% | 94.00% |
+| **Adagrad** | 92.65% | 93.98% | 89.07% | 67.90% | 93.98% |
+| **RMSprop** | 21.25% (unstable) | 91.38% | 94.93% | 90.17% | 94.93% |
+| **Adam** | 11.10% (diverged) | 93.38% | 94.15% | 90.18% | 94.15% |
+| **AdamW** | 12.97% (diverged) | 93.73% | 94.02% | 89.82% | 94.02% |
+
+##### 2. Learning Rate Schedules Benchmark (SGD + Mom 0.9, lr=0.05, 10 epochs)
+| Schedule Configuration | Mathematical Strategy | Final Validation Accuracy | Final Training Loss | Convergence Characteristics |
+| :--- | :--- | :---: | :---: | :--- |
+| **Constant LR** | Fixed $\alpha = 0.05$ | 94.82% | 0.0255 | Fast early drop; oscillates around valley floor |
+| **StepLR (step=3, gamma=0.3)** | Step decay every 3 epochs | 95.92% | 0.0071 | Sharp accuracy jumps after each decay |
+| **ExponentialLR (gamma=0.7)** | Continuous decay $\alpha_t = \alpha_0 \cdot 0.7^t$ | 95.67% | 0.0109 | Steady monotonic step reduction |
+| **CosineAnnealingLR (T_max=10)** | Half-period cosine decay | **95.95%** | **0.0028** | Smooth descent without shocks; lowest loss |
+| **StepLR (step=1, gamma=0.1)** | Premature aggressive decay | 93.87% | 0.1231 | Freezes too early; underfits |
+
+##### 3. Batch Normalization & Evaluation Mode Benchmark
+| Learning Rate ($\alpha$) | Without Batch Normalization | With Batch Normalization | Observed Impact |
+| :--- | :---: | :---: | :--- |
+| **1.000** | Diverged (`inf` loss) | 90.40% | Batch norm prevents gradient explosion at large LR |
+| **0.100** | 93.02% | 95.40% | Faster convergence and +2.38% accuracy boost |
+| **0.010** | 93.82% | **95.43%** | Smoother loss landscape and higher peak performance |
+| **0.001** | 88.20% | 92.47% | +4.27% accuracy improvement |
+
+| Evaluation Mode (Trained with $\alpha=0.01$) | Validation Loss | Validation Accuracy | Notes |
+| :--- | :---: | :---: | :--- |
+| `model.eval()` mode | **0.1466** | **95.77%** | Uses population running mean and variance |
+| `model.train()` mode (batch size 8) | 0.4425 | 85.85% | 9.92% collapse due to high sample-variance noise |
+
+##### 4. CIFAR-10 Benchmark (10 Epochs, Full Training Set)
+| Model Configuration | Best Validation Accuracy | Final Validation Accuracy | Final Training Loss | Optimization Analysis |
+| :--- | :---: | :---: | :---: | :--- |
+| **AdamW + BN + Cosine Annealing** | **58.34%** | **57.74%** | **0.6672** | Fast convergence; best accuracy on 1.7M parameter MLP |
+| **AdamW without Batch Normalization** | 55.98% | 55.98% | 0.6067 | 2.36% lower; internal covariate shift slows optimization |
+| **Plain SGD (lr=0.01)** | 50.68% | 48.80% | 1.1398 | Stagnates on rugged, high-dimensional loss surface |
+
 ---
