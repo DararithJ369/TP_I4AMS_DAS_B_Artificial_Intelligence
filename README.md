@@ -30,7 +30,7 @@ Contents include:
 | **TP 02 Class Activity** | Deep Neural Network Step by Step | Deep L-layer NN, Forward/Backward propagation, Leaky ReLU, Autograd verification, Gradient descent | Completed | [View Notebook](tpw2/TP2_DeepNN_Step_by_Step_Class_activity.ipynb) |
 | **TP 02 Assignment** | Odd or Even Classification with Deep NN | Binary classification on MNIST, Deep architecture tuning, Initialization analysis, Error analysis | Completed | [View Notebook](tpw2/TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb) |
 | **TP 03** | Initialization and Regularization | Weight initialization (zeros, random, He), L2 regularization, Dropout, Moons & Spirals classification, Custom Tanh | Completed | [View Notebook](tpw3/TP3_Initialization_Regularization.ipynb) |
-| **TP 04** | Optimization Algorithms & Techniques | SGD, Mini-batches, Momentum, Nesterov, Adaptive Optimizers (Adagrad, RMSprop, Adam, AdamW), LR Schedules, Batch Normalization | Completed | [View Notebook](tpw4/TP4_Optimization.ipynb) |
+| **TP 04** | Optimization Algorithms & Techniques | SGD, Mini-batches, Momentum, Nesterov, Adaptive Optimizers (Adagrad, RMSprop, Adam, AdamW), LR Schedules, Batch Normalization, CIFAR-10 | Completed | [View Notebook](tpw4/TP4_Optimization.ipynb) |
 
 ---
 
@@ -42,15 +42,15 @@ Contents include:
 ├── pyproject.toml
 ├── uv.lock
 ├── tpw1/
-│   ├── TP_Introduction_to_PyTorch.ipynb          # ★ Week 1 Primary Solution Notebook (Exercises 1–12 Completed)
+│   ├── TP_Introduction_to_PyTorch.ipynb          # Week 1 Primary Solution Notebook (Exercises 1–12 Completed)
 │   └── Notebook1_Introduction_to_PyTorch.ipynb   # Guided tutorial / lecture notebook (with completed exercises)
 ├── tpw2/
-│   ├── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # ★ Week 2 Class Activity (Exercises 1–3 Completed)
-│   └── TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb  # ★ Week 2 Assignment (Tasks 1–6 Completed)
+│   ├── TP2_DeepNN_Step_by_Step_Class_activity.ipynb  # Week 2 Class Activity (Exercises 1–3 Completed)
+│   └── TP2_Odd_or_Even_Assignment_DeepNetwork.ipynb  # Week 2 Assignment (Tasks 1–6 Completed)
 ├── tpw3/
-│   └── TP3_Initialization_Regularization.ipynb       # ★ Week 3 Assignment & Class Activity (Exercises 1–8 Completed)
+│   └── TP3_Initialization_Regularization.ipynb       # Week 3 Assignment & Class Activity (Exercises 1–8 Completed)
 └── tpw4/
-    └── TP4_Optimization.ipynb                        # ★ Week 4 Primary Solution Notebook (Exercises 1–8 Completed)
+    └── TP4_Optimization.ipynb                        # Week 4 Primary Solution Notebook (Exercises 1–9 Completed)
 ```
 
 ---
